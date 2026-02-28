@@ -257,7 +257,7 @@ export default function AddScreen() {
             {type === "income" ? "+" : "-"}${isAmountValid ? parsedAmount.toFixed(2) : "0.00"}
           </Text>
           <Text style={styles.previewMeta}>
-            {(title.trim() || "Untitled")} • {selectedCategory} • {displayDate || "No date"}
+            {(title.trim() || "Untitled")} â€¢ {selectedCategory} â€¢ {displayDate || "No date"}
           </Text>
         </View>
 
@@ -282,9 +282,9 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     content: {
       paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 120,
-      gap: 12,
+      paddingTop: 56,
+      paddingBottom: 116,
+      gap: 8,
     },
     headerRow: {
       flexDirection: "row",
@@ -293,7 +293,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       marginBottom: 8,
     },
     title: {
-      fontSize: 30,
+      fontSize: 28,
       fontWeight: "700",
       color: theme.text,
       letterSpacing: -0.3,
@@ -304,9 +304,9 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       color: theme.muted,
     },
     iconButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 42,
+      height: 42,
+      borderRadius: 21,
       backgroundColor: theme.surfaceAlt,
       borderWidth: 1,
       borderColor: theme.border,
@@ -315,14 +315,14 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     typeRow: {
       flexDirection: "row",
-      gap: 10,
+      gap: 8,
     },
     typePill: {
       flex: 1,
-      borderRadius: 12,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
-      paddingVertical: 10,
+      paddingVertical: 11,
       paddingHorizontal: 12,
       flexDirection: "row",
       alignItems: "center",
@@ -344,10 +344,10 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     amountCard: {
       backgroundColor: theme.primary,
-      borderRadius: 24,
+      borderRadius: 22,
       borderWidth: 1,
       borderColor: isDark ? "#5A9CFF" : "#1961E5",
-      padding: 20,
+      padding: 18,
     },
     amountLabel: {
       color: "#DDE9FF",
@@ -361,20 +361,20 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     amountSign: {
       color: "#FFFFFF",
-      fontSize: 30,
+      fontSize: 28,
       fontWeight: "700",
       marginRight: 2,
     },
     currencySymbol: {
       color: "#FFFFFF",
-      fontSize: 30,
+      fontSize: 28,
       fontWeight: "700",
       marginTop: 1,
     },
     amountInput: {
       flex: 1,
       color: "#FFFFFF",
-      fontSize: 36,
+      fontSize: 34,
       fontWeight: "700",
       paddingVertical: 0,
       letterSpacing: -0.7,
@@ -386,11 +386,11 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     card: {
       backgroundColor: theme.surface,
-      borderRadius: 18,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
       padding: 14,
-      gap: 10,
+      gap: 8,
     },
     sectionTitle: {
       color: theme.text,
@@ -403,7 +403,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       fontSize: 12,
     },
     textInput: {
-      borderRadius: 12,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
       paddingHorizontal: 12,
@@ -418,7 +418,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       gap: 8,
     },
     chip: {
-      borderRadius: 20,
+      borderRadius: 21,
       borderWidth: 1,
       borderColor: theme.border,
       paddingVertical: 7,
@@ -445,18 +445,18 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     noteInput: {
       minHeight: 88,
       textAlignVertical: "top",
-      borderRadius: 12,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
       paddingHorizontal: 12,
-      paddingVertical: 10,
+      paddingVertical: 11,
       color: theme.text,
       backgroundColor: theme.surfaceAlt,
       fontSize: 14,
     },
     previewCard: {
       backgroundColor: theme.surface,
-      borderRadius: 18,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
       padding: 14,
@@ -479,7 +479,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     primaryButton: {
       backgroundColor: theme.primary,
-      borderRadius: 14,
+      borderRadius: 16,
       paddingVertical: 15,
       alignItems: "center",
       marginTop: 4,

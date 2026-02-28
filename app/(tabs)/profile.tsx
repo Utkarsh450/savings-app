@@ -1,18 +1,25 @@
 import { logoutUser } from "@/src/features/auth/authService";
 import { useAuthStore } from "@/src/features/auth/authStore";
 import { useThemeStore } from "@/src/features/theme/themeStore";
-import { AppTheme } from "@/src/theme/appTheme";
+import { AppTheme, ThemeVariant } from "@/src/theme/appTheme";
 import { useAppTheme } from "@/src/theme/useAppTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 
+const themeOptions: { id: ThemeVariant; label: string; subtitle: string }[] = [
+  { id: "blueprint", label: "Blueprint", subtitle: "Balanced fintech blue" },
+  { id: "graphite", label: "Graphite", subtitle: "Minimal neutral style" },
+  { id: "mint", label: "Mint", subtitle: "Fresh green dashboard" },
+];
+
 export default function ProfileScreen() {
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const setMode = useThemeStore((state) => state.setMode);
-  const { theme, isDark } = useAppTheme();
+  const setVariant = useThemeStore((state) => state.setVariant);
+  const { theme, isDark, variant } = useAppTheme();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
@@ -63,7 +70,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
+          <Text style={styles.sectionTitle}>Appearance</Text>
 
           <View style={styles.settingRow}>
             <View style={styles.settingLeft}>
@@ -74,6 +81,26 @@ export default function ProfileScreen() {
             </View>
             <Switch value={isDark} onValueChange={handleDarkModeToggle} trackColor={{ true: theme.primary }} />
           </View>
+
+          <Text style={styles.themeHeading}>Theme</Text>
+          <View style={styles.themeGrid}>
+            {themeOptions.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={[styles.themeCard, variant === item.id && styles.activeThemeCard]}
+                onPress={() => setVariant(item.id)}
+                activeOpacity={0.85}
+              >
+                <View style={[styles.themePreview, item.id === "blueprint" ? styles.previewBlue : item.id === "graphite" ? styles.previewGray : styles.previewMint]} />
+                <Text style={styles.themeLabel}>{item.label}</Text>
+                <Text style={styles.themeSubtitle}>{item.subtitle}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Preferences</Text>
 
           <View style={styles.settingRow}>
             <View style={styles.settingLeft}>
@@ -118,7 +145,7 @@ const createStyles = (theme: AppTheme) =>
     content: {
       paddingHorizontal: 20,
       paddingTop: 62,
-      paddingBottom: 30,
+      paddingBottom: 110,
     },
     pageTitle: {
       fontSize: 30,
@@ -131,8 +158,8 @@ const createStyles = (theme: AppTheme) =>
       backgroundColor: theme.surface,
       borderWidth: 1,
       borderColor: theme.border,
-      borderRadius: 20,
-      padding: 16,
+      borderRadius: 22,
+      padding: 18,
       flexDirection: "row",
       alignItems: "center",
       marginBottom: 14,
@@ -192,14 +219,63 @@ const createStyles = (theme: AppTheme) =>
       backgroundColor: theme.surface,
       borderWidth: 1,
       borderColor: theme.border,
-      borderRadius: 20,
-      padding: 14,
+      borderRadius: 22,
+      padding: 16,
+      marginBottom: 12,
     },
     sectionTitle: {
       color: theme.text,
-      fontSize: 16,
+      fontSize: 17,
       fontWeight: "700",
       marginBottom: 12,
+    },
+    themeHeading: {
+      color: theme.muted,
+      fontSize: 12,
+      fontWeight: "600",
+      marginBottom: 8,
+      marginTop: 2,
+      textTransform: "uppercase",
+      letterSpacing: 0.4,
+    },
+    themeGrid: {
+      gap: 10,
+      marginBottom: 4,
+    },
+    themeCard: {
+      borderWidth: 1,
+      borderColor: theme.border,
+      borderRadius: 14,
+      backgroundColor: theme.surfaceAlt,
+      padding: 11,
+    },
+    activeThemeCard: {
+      borderColor: theme.primary,
+      backgroundColor: theme.surface,
+    },
+    themePreview: {
+      height: 10,
+      borderRadius: 999,
+      marginBottom: 8,
+    },
+    previewBlue: {
+      backgroundColor: "#2E6EFF",
+    },
+    previewGray: {
+      backgroundColor: "#444444",
+    },
+    previewMint: {
+      backgroundColor: "#169C72",
+    },
+    themeLabel: {
+      color: theme.text,
+      fontSize: 14,
+      fontWeight: "700",
+    },
+    themeSubtitle: {
+      color: theme.muted,
+      marginTop: 2,
+      fontSize: 12,
     },
     settingRow: {
       flexDirection: "row",

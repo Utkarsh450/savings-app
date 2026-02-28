@@ -275,9 +275,9 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     content: {
       paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 100,
-      gap: 12,
+      paddingTop: 56,
+      paddingBottom: 104,
+      gap: 10,
     },
     headerRow: {
       flexDirection: "row",
@@ -286,7 +286,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       marginBottom: 8,
     },
     title: {
-      fontSize: 30,
+      fontSize: 28,
       fontWeight: "700",
       color: theme.text,
       letterSpacing: -0.3,
@@ -297,9 +297,9 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       color: theme.muted,
     },
     iconButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 42,
+      height: 42,
+      borderRadius: 21,
       backgroundColor: theme.surfaceAlt,
       borderWidth: 1,
       borderColor: theme.border,
@@ -308,14 +308,14 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     periodRow: {
       flexDirection: "row",
-      gap: 8,
+      gap: 7,
     },
     periodPill: {
       flex: 1,
-      borderRadius: 12,
+      borderRadius: 14,
       borderWidth: 1,
       borderColor: theme.border,
-      paddingVertical: 10,
+      paddingVertical: 11,
       alignItems: "center",
       backgroundColor: theme.surface,
     },
@@ -333,8 +333,8 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     balanceCard: {
       backgroundColor: theme.primary,
-      borderRadius: 24,
-      padding: 22,
+      borderRadius: 22,
+      padding: 20,
       borderWidth: 1,
       borderColor: isDark ? "#5A9CFF" : "#1961E5",
     },
@@ -345,7 +345,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     balanceAmount: {
       color: "#FFFFFF",
-      fontSize: 34,
+      fontSize: 32,
       fontWeight: "700",
       letterSpacing: -0.7,
     },
@@ -361,13 +361,13 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     summaryRow: {
       flexDirection: "row",
-      gap: 12,
+      gap: 10,
     },
     summaryCard: {
       flex: 1,
-      borderRadius: 18,
-      paddingHorizontal: 16,
-      paddingVertical: 15,
+      borderRadius: 16,
+      paddingHorizontal: 14,
+      paddingVertical: 14,
       borderWidth: 1,
     },
     incomeCard: {
@@ -396,14 +396,14 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       marginTop: 6,
     },
     sectionTitle: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "700",
       color: theme.text,
       letterSpacing: -0.2,
     },
     chartCard: {
       backgroundColor: theme.surface,
-      borderRadius: 18,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
       paddingHorizontal: 14,
@@ -437,7 +437,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     listCard: {
       backgroundColor: theme.surface,
-      borderRadius: 18,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
       paddingVertical: 8,

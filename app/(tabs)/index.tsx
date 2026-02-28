@@ -277,9 +277,9 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     content: {
       paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 120,
-      gap: 12,
+      paddingTop: 56,
+      paddingBottom: 116,
+      gap: 10,
     },
     topRow: {
       flexDirection: "row",
@@ -288,7 +288,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       marginBottom: 12,
     },
     greeting: {
-      fontSize: 30,
+      fontSize: 28,
       fontWeight: "700",
       color: theme.text,
       letterSpacing: -0.4,
@@ -299,9 +299,9 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       color: theme.muted,
     },
     iconButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 42,
+      height: 42,
+      borderRadius: 21,
       backgroundColor: theme.surfaceAlt,
       borderWidth: 1,
       borderColor: theme.border,
@@ -310,8 +310,8 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     balanceCard: {
       backgroundColor: theme.primary,
-      borderRadius: 24,
-      padding: 22,
+      borderRadius: 22,
+      padding: 20,
       borderWidth: 1,
       borderColor: isDark ? "#5A9CFF" : "#1961E5",
     },
@@ -322,7 +322,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     balanceAmount: {
       color: "#FFFFFF",
-      fontSize: 36,
+      fontSize: 34,
       fontWeight: "700",
       letterSpacing: -0.9,
     },
@@ -344,13 +344,13 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     summaryRow: {
       flexDirection: "row",
-      gap: 12,
+      gap: 10,
     },
     summaryCard: {
       flex: 1,
-      borderRadius: 18,
-      paddingHorizontal: 16,
-      paddingVertical: 15,
+      borderRadius: 16,
+      paddingHorizontal: 14,
+      paddingVertical: 14,
       borderWidth: 1,
     },
     incomeCard: {
@@ -379,7 +379,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       marginTop: 8,
     },
     sectionTitle: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "700",
       color: theme.text,
       letterSpacing: -0.2,
@@ -391,18 +391,18 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     quickActionsRow: {
       flexDirection: "row",
-      gap: 10,
+      gap: 8,
     },
     quickActionCard: {
       flex: 1,
       backgroundColor: theme.surface,
       borderWidth: 1,
       borderColor: theme.border,
-      borderRadius: 14,
-      paddingVertical: 14,
+      borderRadius: 16,
+      paddingVertical: 12,
       paddingHorizontal: 10,
       alignItems: "center",
-      gap: 8,
+      gap: 6,
     },
     quickActionIcon: {
       width: 30,
@@ -420,7 +420,7 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     },
     listCard: {
       backgroundColor: theme.surface,
-      borderRadius: 20,
+      borderRadius: 18,
       paddingVertical: 8,
       paddingHorizontal: 14,
       borderWidth: 1,
@@ -594,10 +594,10 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     fab: {
       position: "absolute",
       right: 24,
-      bottom: 28,
-      width: 62,
-      height: 62,
-      borderRadius: 31,
+      bottom: 90,
+      width: 58,
+      height: 58,
+      borderRadius: 29,
       backgroundColor: theme.primary,
       justifyContent: "center",
       alignItems: "center",

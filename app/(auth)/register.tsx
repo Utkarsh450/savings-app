@@ -8,6 +8,9 @@ import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -48,65 +51,81 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Animated.View entering={FadeInDown.duration(500)}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Start building your savings journey</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={18}
+    >
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <Animated.View entering={FadeInDown.duration(500)}>
+          <View style={styles.hero}>
+            <Text style={styles.eyebrow}>Savings App</Text>
+            <Text style={styles.title}>Create account</Text>
+            <Text style={styles.subtitle}>Set up your profile and start managing money better.</Text>
+          </View>
 
-        <View style={styles.inputWrapper}>
-          <Ionicons name="person-outline" size={18} color={theme.muted} />
-          <TextInput
-            placeholder="Full Name"
-            placeholderTextColor={theme.muted}
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            editable={!loading}
-          />
-        </View>
+          <View style={styles.card}>
+            <Text style={styles.label}>Full name</Text>
+            <View style={styles.inputShell}>
+              <Ionicons name="person-outline" size={18} color={theme.muted} />
+              <TextInput
+                placeholder="John Carter"
+                placeholderTextColor={theme.muted}
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                editable={!loading}
+              />
+            </View>
 
-        <View style={styles.inputWrapper}>
-          <Ionicons name="mail-outline" size={18} color={theme.muted} />
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor={theme.muted}
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            editable={!loading}
-          />
-        </View>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputShell}>
+              <Ionicons name="mail-outline" size={18} color={theme.muted} />
+              <TextInput
+                placeholder="you@example.com"
+                placeholderTextColor={theme.muted}
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                editable={!loading}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
 
-        <View style={styles.inputWrapper}>
-          <Ionicons name="lock-closed-outline" size={18} color={theme.muted} />
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor={theme.muted}
-            secureTextEntry
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            editable={!loading}
-          />
-        </View>
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.inputShell}>
+              <Ionicons name="lock-closed-outline" size={18} color={theme.muted} />
+              <TextInput
+                placeholder="Create password"
+                placeholderTextColor={theme.muted}
+                secureTextEntry
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                editable={!loading}
+              />
+            </View>
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleRegister}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.buttonText}>Create Account</Text>
-          )}
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleRegister}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.buttonText}>Create Account</Text>
+              )}
+            </TouchableOpacity>
+          </View>
 
-        <TouchableOpacity onPress={() => router.push("/(auth)/login")} disabled={loading}>
-          <Text style={styles.link}>Already have an account? Login</Text>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+          <TouchableOpacity onPress={() => router.push("/(auth)/login")} disabled={loading}>
+            <Text style={styles.link}>Already have an account? Sign in</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -115,30 +134,65 @@ const createStyles = (theme: AppTheme) =>
     container: {
       flex: 1,
       backgroundColor: theme.background,
-      paddingHorizontal: 28,
+    },
+    content: {
+      flexGrow: 1,
       justifyContent: "center",
+      paddingHorizontal: 20,
+      paddingVertical: 28,
+    },
+    hero: {
+      marginBottom: 18,
+      paddingHorizontal: 4,
+    },
+    eyebrow: {
+      color: theme.primary,
+      fontSize: 13,
+      fontWeight: "700",
+      letterSpacing: 0.5,
     },
     title: {
-      fontSize: 30,
+      fontSize: 32,
       fontWeight: "700",
       color: theme.text,
-      marginBottom: 6,
+      marginTop: 8,
+      letterSpacing: -0.4,
     },
     subtitle: {
-      fontSize: 15,
+      fontSize: 14,
       color: theme.muted,
-      marginBottom: 36,
+      marginTop: 8,
+      lineHeight: 20,
     },
-    inputWrapper: {
-      flexDirection: "row",
-      alignItems: "center",
+    card: {
       backgroundColor: theme.surface,
       borderWidth: 1,
       borderColor: theme.border,
-      paddingHorizontal: 16,
-      paddingVertical: 14,
+      borderRadius: 22,
+      padding: 18,
+      shadowColor: "#102A43",
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.08,
+      shadowRadius: 20,
+      elevation: 2,
+    },
+    label: {
+      color: theme.text,
+      fontWeight: "600",
+      fontSize: 13,
+      marginBottom: 8,
+      marginTop: 2,
+    },
+    inputShell: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.surfaceAlt,
+      borderWidth: 1,
+      borderColor: theme.border,
+      paddingHorizontal: 12,
       borderRadius: 14,
-      marginBottom: 18,
+      minHeight: 50,
+      marginBottom: 14,
     },
     input: {
       flex: 1,
@@ -148,10 +202,11 @@ const createStyles = (theme: AppTheme) =>
     },
     button: {
       backgroundColor: theme.primary,
-      paddingVertical: 16,
-      borderRadius: 16,
+      minHeight: 52,
+      borderRadius: 14,
       alignItems: "center",
-      marginTop: 8,
+      justifyContent: "center",
+      marginTop: 6,
     },
     buttonDisabled: {
       opacity: 0.6,
@@ -162,9 +217,10 @@ const createStyles = (theme: AppTheme) =>
       fontSize: 16,
     },
     link: {
-      marginTop: 24,
+      marginTop: 22,
       textAlign: "center",
       color: theme.primary,
-      fontWeight: "500",
+      fontWeight: "600",
+      fontSize: 14,
     },
   });
