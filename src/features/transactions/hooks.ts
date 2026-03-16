@@ -1,11 +1,16 @@
 import { useAuthStore } from "@/src/features/auth/authStore";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createTransaction, listTransactions } from "./transactionsService";
+import {
+  createTransaction,
+  deleteTransaction,
+  listTransactions,
+  updateTransaction,
+} from "./transactionsService";
 import { CreateTransactionInput, Transaction } from "./types";
 
 export const useTransactions = () => {
   const user = useAuthStore((state) => state.user);
-  const userId = user?.$id as string | undefined;
+  const userId = user?.id;
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +55,27 @@ export const useTransactions = () => {
     [userId]
   );
 
+  const editTransaction = useCallback(async (transactionId: string, payload: Partial<CreateTransactionInput>) => {
+    setSaving(true);
+    try {
+      const updated = await updateTransaction(transactionId, payload);
+      setTransactions((prev) => prev.map((item) => (item.id === transactionId ? updated : item)));
+      return updated;
+    } finally {
+      setSaving(false);
+    }
+  }, []);
+
+  const removeTransaction = useCallback(async (transactionId: string) => {
+    setSaving(true);
+    try {
+      await deleteTransaction(transactionId);
+      setTransactions((prev) => prev.filter((item) => item.id !== transactionId));
+    } finally {
+      setSaving(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
@@ -78,5 +104,7 @@ export const useTransactions = () => {
     summary,
     fetchTransactions,
     addTransaction,
+    editTransaction,
+    removeTransaction,
   };
 };

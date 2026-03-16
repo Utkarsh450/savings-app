@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { getCurrentUser } from "./authService";
+import { AppUser } from "./types";
 
 type AuthState = {
-  user: any | null;
+  user: AppUser | null;
   loading: boolean;
-  setUser: (user: any | null) => void;
+  setUser: (user: AppUser | null) => void;
   checkAuth: () => Promise<void>;
   logout: () => void;
 };

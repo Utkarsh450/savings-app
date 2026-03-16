@@ -1,55 +1,36 @@
-import { ENV } from "@/src/config/env";
-import { databases } from "@/src/lib/appwrite";
-import { ID, Models, Query } from "react-native-appwrite";
+import { db } from "@/src/firebase/config";
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, query, updateDoc, where } from "firebase/firestore";
 import { CreateTransactionInput, Transaction } from "./types";
 
-const getCollectionConfig = () => {
-  const databaseId = ENV.APPWRITE_DATABASE_ID;
-  const collectionId = ENV.APPWRITE_TRANSACTIONS_COLLECTION_ID;
+const transactionsCollection = collection(db, "transactions");
 
-  if (!databaseId || !collectionId) {
-    throw new Error(
-      "Missing Appwrite config. Set EXPO_PUBLIC_APPWRITE_DATABASE_ID and EXPO_PUBLIC_APPWRITE_TRANSACTIONS_COLLECTION_ID in .env."
-    );
-  }
+const mapDocToTransaction = (id: string, fields: Record<string, unknown>): Transaction => ({
+  id,
+  userId: String(fields.userId ?? ""),
+  title: String(fields.title ?? ""),
+  amount: Number(fields.amount ?? 0),
+  type: fields.type === "income" ? "income" : "expense",
+  category: String(fields.category ?? "Other"),
+  paymentMethod: String(fields.paymentMethod ?? "Unknown"),
+  note: String(fields.note ?? ""),
+  txDate: String(fields.txDate ?? fields.createdAt ?? new Date().toISOString()),
+  isRecurring: Boolean(fields.isRecurring),
+  createdAt: String(fields.createdAt ?? new Date().toISOString()),
+});
 
-  return { databaseId, collectionId };
-};
+export const listTransactions = async (userId: string, maxItems = 100) => {
+  const snapshot = await getDocs(
+    query(transactionsCollection, where("userId", "==", userId), limit(maxItems))
+  );
 
-const mapDocToTransaction = (doc: Models.Document): Transaction => {
-  const fields = doc as Models.Document & Record<string, unknown>;
-
-  return {
-    id: doc.$id,
-    userId: String(fields.userId ?? ""),
-    title: String(fields.title ?? ""),
-    amount: Number(fields.amount ?? 0),
-    type: (fields.type === "income" ? "income" : "expense"),
-    category: String(fields.category ?? "Other"),
-    paymentMethod: String(fields.paymentMethod ?? "Unknown"),
-    note: String(fields.note ?? ""),
-    txDate: String(fields.txDate ?? doc.$createdAt),
-    isRecurring: Boolean(fields.isRecurring),
-    createdAt: doc.$createdAt,
-  };
-};
-
-export const listTransactions = async (userId: string, limit = 100) => {
-  const { databaseId, collectionId } = getCollectionConfig();
-
-  const response = await databases.listDocuments(databaseId, collectionId, [
-    Query.equal("userId", userId),
-    Query.orderDesc("txDate"),
-    Query.limit(limit),
-  ]);
-
-  return response.documents.map(mapDocToTransaction);
+  return snapshot.docs
+    .map((doc) => mapDocToTransaction(doc.id, doc.data()))
+    .sort((a, b) => new Date(b.txDate).getTime() - new Date(a.txDate).getTime());
 };
 
 export const createTransaction = async (userId: string, payload: CreateTransactionInput) => {
-  const { databaseId, collectionId } = getCollectionConfig();
-
-  const doc = await databases.createDocument(databaseId, collectionId, ID.unique(), {
+  const createdAt = new Date().toISOString();
+  const docPayload = {
     userId,
     title: payload.title.trim(),
     amount: payload.amount,
@@ -59,7 +40,59 @@ export const createTransaction = async (userId: string, payload: CreateTransacti
     note: payload.note?.trim() ?? "",
     txDate: payload.txDate,
     isRecurring: payload.isRecurring,
-  });
+    createdAt,
+  };
 
-  return mapDocToTransaction(doc);
+  const doc = await addDoc(transactionsCollection, docPayload);
+  return mapDocToTransaction(doc.id, docPayload);
+};
+
+export const updateTransaction = async (
+  transactionId: string,
+  payload: Partial<CreateTransactionInput>
+) => {
+  const docRef = doc(db, "transactions", transactionId);
+  const nextPayload: Record<string, unknown> = {};
+
+  if (payload.title !== undefined) {
+    nextPayload.title = payload.title.trim();
+  }
+  if (payload.amount !== undefined) {
+    nextPayload.amount = payload.amount;
+  }
+  if (payload.type !== undefined) {
+    nextPayload.type = payload.type;
+  }
+  if (payload.category !== undefined) {
+    nextPayload.category = payload.category;
+  }
+  if (payload.paymentMethod !== undefined) {
+    nextPayload.paymentMethod = payload.paymentMethod;
+  }
+  if (payload.note !== undefined) {
+    nextPayload.note = payload.note.trim();
+  }
+  if (payload.txDate !== undefined) {
+    nextPayload.txDate = payload.txDate;
+  }
+  if (payload.isRecurring !== undefined) {
+    nextPayload.isRecurring = payload.isRecurring;
+  }
+
+  await updateDoc(docRef, nextPayload);
+
+  const refreshedSnapshot = await getDocs(
+    query(transactionsCollection, where("__name__", "==", transactionId), limit(1))
+  );
+  const updatedDoc = refreshedSnapshot.docs[0];
+
+  if (!updatedDoc) {
+    throw new Error("Transaction not found after update.");
+  }
+
+  return mapDocToTransaction(updatedDoc.id, updatedDoc.data());
+};
+
+export const deleteTransaction = async (transactionId: string) => {
+  await deleteDoc(doc(db, "transactions", transactionId));
 };

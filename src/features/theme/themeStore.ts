@@ -11,7 +11,7 @@ type ThemeState = {
 };
 
 export const useThemeStore = create<ThemeState>((set) => ({
-  mode: "system",
+  mode: "dark",
   variant: "blueprint",
   setMode: (mode) => set({ mode }),
   setVariant: (variant) => set({ variant }),

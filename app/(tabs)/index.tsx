@@ -14,33 +14,26 @@ const goals = [
 ];
 
 const quickActions = [
-  { id: "a1", label: "Add Expense", icon: "remove-circle-outline" as const, route: "/(tabs)/add" as const },
-  { id: "a2", label: "Add Income", icon: "add-circle-outline" as const, route: "/(tabs)/add" as const },
+  { id: "a1", label: "Expense", icon: "remove-circle-outline" as const, route: "/(tabs)/add" as const },
+  { id: "a2", label: "Income", icon: "add-circle-outline" as const, route: "/(tabs)/add" as const },
   { id: "a3", label: "Insights", icon: "stats-chart-outline" as const, route: "/(tabs)/analytics" as const },
 ];
 
-const formatCurrency = (value: number) => {
-  return `$${Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-};
+const formatCurrency = (value: number) =>
+  `$${Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const formatTransactionDate = (dateISO: string) => {
   const date = new Date(dateISO);
   const now = new Date();
 
-  if (Number.isNaN(date.getTime())) {
-    return "Unknown date";
-  }
-
-  const isToday = date.toDateString() === now.toDateString();
-  if (isToday) {
+  if (Number.isNaN(date.getTime())) return "Unknown date";
+  if (date.toDateString() === now.toDateString()) {
     return `Today, ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
   }
 
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
-  if (date.toDateString() === yesterday.toDateString()) {
-    return "Yesterday";
-  }
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
 
   return date.toLocaleDateString([], { day: "2-digit", month: "short" });
 };
@@ -49,8 +42,8 @@ export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { transactions, loading, error, summary, fetchTransactions } = useTransactions();
-  const { theme, isDark } = useAppTheme();
-  const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
+  const { theme } = useAppTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   useFocusEffect(
     useCallback(() => {
@@ -76,13 +69,10 @@ export default function HomeScreen() {
   const topExpenseCategories = useMemo(() => {
     const map = new Map<string, number>();
     for (const tx of transactions) {
-      if (tx.type !== "expense") {
-        continue;
-      }
+      if (tx.type !== "expense") continue;
       map.set(tx.category, (map.get(tx.category) ?? 0) + tx.amount);
     }
 
-    const palette = ["#4E8DFF", "#22A06B", "#F08C2E", "#B66AFF", "#E35D6A"];
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
@@ -90,7 +80,6 @@ export default function HomeScreen() {
         id: `${name}-${index}`,
         name,
         amount: formatCurrency(amount),
-        color: palette[index % palette.length],
       }));
   }, [transactions]);
 
@@ -107,65 +96,58 @@ export default function HomeScreen() {
     }
   };
 
-  const goToAnalytics = () => router.push("/(tabs)/analytics");
-  const goToAdd = () => router.push("/(tabs)/add");
-
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.topRow}>
-          <View>
-            <Text style={styles.greeting}>Hi {user?.name || "User"}</Text>
-            <Text style={styles.helperText}>Here is your live money snapshot</Text>
-          </View>
-          <TouchableOpacity style={styles.iconButton} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={18} color={theme.text} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Net Balance</Text>
-          <Text style={styles.balanceAmount}>{`${summary.balance >= 0 ? "+" : "-"}${formatCurrency(summary.balance)}`}</Text>
-          <View style={styles.balanceFooter}>
-            <View style={styles.balanceDot} />
-            <Text style={styles.balanceMeta}>{loading ? "Syncing..." : "Updated from Appwrite"}</Text>
-          </View>
-        </View>
-
-        <View style={styles.summaryRow}>
-          <View style={[styles.summaryCard, styles.incomeCard]}>
-            <Text style={styles.cardLabel}>Income (Month)</Text>
-            <Text style={styles.cardAmount}>{`+${formatCurrency(monthIncome)}`}</Text>
-          </View>
-          <View style={[styles.summaryCard, styles.expenseCard]}>
-            <Text style={styles.cardLabel}>Expense (Month)</Text>
-            <Text style={styles.cardAmount}>{`-${formatCurrency(monthExpense)}`}</Text>
-          </View>
-        </View>
-
-        <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-        </View>
-        <View style={styles.quickActionsRow}>
-          {quickActions.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.quickActionCard}
-              activeOpacity={0.85}
-              onPress={() => router.push(item.route)}
-            >
-              <View style={styles.quickActionIcon}>
-                <Ionicons name={item.icon} size={16} color={theme.primary} />
-              </View>
-              <Text style={styles.quickActionText}>{item.label}</Text>
+        <View style={styles.heroShell}>
+          <View style={styles.topRow}>
+            <View>
+              <Text style={styles.greeting}>Hi, {user?.name || "User"}</Text>
+              <Text style={styles.helperText}>Your money cockpit is live.</Text>
+            </View>
+            <TouchableOpacity style={styles.iconButton} onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={18} color="#F7F4EC" />
             </TouchableOpacity>
-          ))}
+          </View>
+
+          <View style={styles.balanceRow}>
+            <View style={styles.balanceCard}>
+              <Text style={styles.balanceLabel}>Net balance</Text>
+              <Text style={styles.balanceAmount}>{`${summary.balance >= 0 ? "+" : "-"}${formatCurrency(summary.balance)}`}</Text>
+              <View style={styles.balanceMetaRow}>
+                <View style={styles.liveDot} />
+                <Text style={styles.balanceMeta}>{loading ? "Syncing..." : "Updated from Firebase"}</Text>
+              </View>
+            </View>
+
+            <View style={styles.heroMiniCol}>
+              <View style={styles.miniStatCard}>
+                <Text style={styles.miniLabel}>Income</Text>
+                <Text style={styles.miniValue}>{`+${formatCurrency(monthIncome)}`}</Text>
+              </View>
+              <View style={[styles.miniStatCard, styles.miniStatSoft]}>
+                <Text style={styles.miniLabel}>Expense</Text>
+                <Text style={styles.miniValue}>{`-${formatCurrency(monthExpense)}`}</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.quickRow}>
+            {quickActions.map((item) => (
+              <TouchableOpacity key={item.id} style={styles.quickActionCard} onPress={() => router.push(item.route)}>
+                <View style={styles.quickActionIcon}>
+                  <Ionicons name={item.icon} size={16} color="#111111" />
+                </View>
+                <Text style={styles.quickActionText}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Savings Goals</Text>
         </View>
-        <View style={styles.listCard}>
+        <View style={styles.card}>
           {goals.map((goal, index) => {
             const progress = Math.min(goal.saved / goal.target, 1);
             return (
@@ -173,9 +155,7 @@ export default function HomeScreen() {
                 <View style={styles.goalRow}>
                   <View>
                     <Text style={styles.goalName}>{goal.name}</Text>
-                    <Text style={styles.goalMeta}>
-                      ${goal.saved.toLocaleString()} of ${goal.target.toLocaleString()}
-                    </Text>
+                    <Text style={styles.goalMeta}>${goal.saved.toLocaleString()} of ${goal.target.toLocaleString()}</Text>
                   </View>
                   <Text style={styles.goalPercent}>{Math.round(progress * 100)}%</Text>
                 </View>
@@ -189,36 +169,34 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>Spending by Category</Text>
-          <TouchableOpacity onPress={goToAnalytics}>
-            <Text style={styles.sectionAction}>Details</Text>
+          <Text style={styles.sectionTitle}>Category Radar</Text>
+          <TouchableOpacity onPress={() => router.push("/(tabs)/analytics")}>
+            <Text style={styles.sectionAction}>Open</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.categoryCard}>
+        <View style={styles.card}>
           {topExpenseCategories.length === 0 ? (
             <Text style={styles.emptyText}>No expense data yet.</Text>
           ) : (
-            topExpenseCategories.map((item) => (
-              <View key={item.id} style={styles.categoryRow}>
-                <View style={styles.categoryLeft}>
-                  <View style={[styles.categoryDot, { backgroundColor: item.color }]} />
+            topExpenseCategories.map((item, index) => (
+              <View key={item.id}>
+                <View style={styles.categoryRow}>
                   <Text style={styles.categoryName}>{item.name}</Text>
+                  <Text style={styles.categoryAmount}>{item.amount}</Text>
                 </View>
-                <Text style={styles.categoryAmount}>{item.amount}</Text>
+                {index < topExpenseCategories.length - 1 ? <View style={styles.separator} /> : null}
               </View>
             ))
           )}
         </View>
 
         <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>Recent Transactions</Text>
-          <TouchableOpacity onPress={goToAnalytics}>
+          <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <TouchableOpacity onPress={() => router.push("/(tabs)/analytics")}>
             <Text style={styles.sectionAction}>View all</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.listCard}>
+        <View style={styles.card}>
           {loading ? (
             <View style={styles.loadingBox}>
               <ActivityIndicator color={theme.primary} />
@@ -232,7 +210,7 @@ export default function HomeScreen() {
                 <View style={styles.transactionRow}>
                   <View style={styles.transactionLeft}>
                     <View style={styles.transactionIconWrap}>
-                      <Ionicons name={item.type === "income" ? "arrow-down" : "arrow-up"} size={14} color={theme.text} />
+                      <Ionicons name={item.type === "income" ? "arrow-down" : "arrow-up"} size={14} color="#111111" />
                     </View>
                     <View>
                       <Text style={styles.transactionTitle}>{item.title}</Text>
@@ -250,179 +228,179 @@ export default function HomeScreen() {
         </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <View style={styles.tipCard}>
-          <View style={styles.tipIconWrap}>
-            <Ionicons name="bulb-outline" size={18} color={theme.primary} />
-          </View>
-          <View style={styles.tipContent}>
-            <Text style={styles.tipTitle}>Smart tip for today</Text>
-            <Text style={styles.tipText}>Review recurring payments weekly to reduce silent spending.</Text>
-          </View>
-        </View>
       </ScrollView>
 
-      <TouchableOpacity style={styles.fab} activeOpacity={0.9} onPress={goToAdd}>
-        <Ionicons name="add" size={28} color="#FFFFFF" />
+      <TouchableOpacity style={styles.fab} activeOpacity={0.9} onPress={() => router.push("/(tabs)/add")}>
+        <Ionicons name="add" size={28} color="#111111" />
       </TouchableOpacity>
     </View>
   );
 }
 
-const createStyles = (theme: AppTheme, isDark: boolean) =>
+const createStyles = (theme: AppTheme) =>
   StyleSheet.create({
     screen: {
       flex: 1,
       backgroundColor: theme.background,
     },
     content: {
-      paddingHorizontal: 20,
-      paddingTop: 56,
+      paddingHorizontal: 18,
+      paddingTop: 24,
       paddingBottom: 116,
-      gap: 10,
+      gap: 14,
+    },
+    heroShell: {
+      backgroundColor: "#090909",
+      borderRadius: 34,
+      padding: 18,
+      borderWidth: 1,
+      borderColor: "#1F1F1F",
+      gap: 16,
     },
     topRow: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 12,
     },
     greeting: {
-      fontSize: 28,
-      fontWeight: "700",
-      color: theme.text,
-      letterSpacing: -0.4,
+      fontSize: 30,
+      fontWeight: "800",
+      color: "#F7F4EC",
+      letterSpacing: -0.7,
     },
     helperText: {
       marginTop: 4,
       fontSize: 14,
-      color: theme.muted,
+      color: "#9E988B",
     },
     iconButton: {
       width: 42,
       height: 42,
       borderRadius: 21,
-      backgroundColor: theme.surfaceAlt,
+      backgroundColor: "#171717",
       borderWidth: 1,
-      borderColor: theme.border,
+      borderColor: "#282828",
       alignItems: "center",
       justifyContent: "center",
     },
+    balanceRow: {
+      flexDirection: "row",
+      gap: 12,
+    },
     balanceCard: {
-      backgroundColor: theme.primary,
-      borderRadius: 22,
-      padding: 20,
-      borderWidth: 1,
-      borderColor: isDark ? "#5A9CFF" : "#1961E5",
+      flex: 1.15,
+      backgroundColor: "#F7F4EC",
+      borderRadius: 28,
+      padding: 18,
+      minHeight: 178,
+      justifyContent: "space-between",
     },
     balanceLabel: {
-      color: "#DDE9FF",
-      fontSize: 13,
-      marginBottom: 8,
+      color: "#716B60",
+      fontSize: 12,
+      fontWeight: "700",
+      textTransform: "uppercase",
+      letterSpacing: 0.9,
     },
     balanceAmount: {
-      color: "#FFFFFF",
+      color: "#111111",
       fontSize: 34,
-      fontWeight: "700",
-      letterSpacing: -0.9,
+      fontWeight: "800",
+      letterSpacing: -1,
     },
-    balanceFooter: {
-      marginTop: 10,
+    balanceMetaRow: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
+      gap: 7,
     },
-    balanceDot: {
-      width: 6,
-      height: 6,
-      borderRadius: 3,
-      backgroundColor: "#FFFFFF",
+    liveDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: "#D6FF39",
     },
     balanceMeta: {
-      color: "#DDE9FF",
+      color: "#716B60",
       fontSize: 12,
     },
-    summaryRow: {
-      flexDirection: "row",
-      gap: 10,
+    heroMiniCol: {
+      flex: 0.85,
+      gap: 12,
     },
-    summaryCard: {
+    miniStatCard: {
       flex: 1,
-      borderRadius: 16,
-      paddingHorizontal: 14,
-      paddingVertical: 14,
+      borderRadius: 24,
+      backgroundColor: "#171717",
       borderWidth: 1,
-    },
-    incomeCard: {
-      backgroundColor: isDark ? "#183157" : "#EAF1FF",
-      borderColor: isDark ? "#2A4D7F" : "#D2E2FF",
-    },
-    expenseCard: {
-      backgroundColor: isDark ? "#1A335A" : "#F2F7FF",
-      borderColor: isDark ? "#2B4E80" : "#DCE8FF",
-    },
-    cardLabel: {
-      color: isDark ? "#CDE0FF" : "#51709C",
-      fontSize: 13,
-      marginBottom: 6,
-    },
-    cardAmount: {
-      color: theme.text,
-      fontSize: 20,
-      fontWeight: "700",
-      letterSpacing: -0.2,
-    },
-    sectionRow: {
-      flexDirection: "row",
+      borderColor: "#262626",
+      padding: 14,
       justifyContent: "space-between",
-      alignItems: "center",
-      marginTop: 8,
     },
-    sectionTitle: {
-      fontSize: 18,
+    miniStatSoft: {
+      backgroundColor: "#121212",
+    },
+    miniLabel: {
+      color: "#A09B90",
+      fontSize: 11,
       fontWeight: "700",
-      color: theme.text,
-      letterSpacing: -0.2,
+      textTransform: "uppercase",
+      letterSpacing: 0.8,
     },
-    sectionAction: {
-      fontSize: 13,
-      color: theme.muted,
-      fontWeight: "600",
+    miniValue: {
+      color: "#F7F4EC",
+      fontSize: 18,
+      fontWeight: "800",
+      letterSpacing: -0.4,
     },
-    quickActionsRow: {
+    quickRow: {
       flexDirection: "row",
       gap: 8,
     },
     quickActionCard: {
       flex: 1,
-      backgroundColor: theme.surface,
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 16,
-      paddingVertical: 12,
+      borderRadius: 22,
+      backgroundColor: "#F7F4EC",
+      paddingVertical: 14,
       paddingHorizontal: 10,
       alignItems: "center",
-      gap: 6,
+      gap: 8,
     },
     quickActionIcon: {
-      width: 30,
-      height: 30,
-      borderRadius: 15,
-      backgroundColor: theme.surfaceAlt,
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      backgroundColor: "#D6FF39",
       alignItems: "center",
       justifyContent: "center",
     },
     quickActionText: {
-      color: theme.text,
-      fontWeight: "600",
+      color: "#111111",
+      fontWeight: "800",
       fontSize: 12,
       textAlign: "center",
     },
-    listCard: {
+    sectionRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 4,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: "800",
+      color: theme.text,
+      letterSpacing: -0.4,
+    },
+    sectionAction: {
+      fontSize: 13,
+      color: theme.muted,
+      fontWeight: "700",
+    },
+    card: {
       backgroundColor: theme.surface,
-      borderRadius: 18,
-      paddingVertical: 8,
-      paddingHorizontal: 14,
+      borderRadius: 28,
+      paddingVertical: 10,
+      paddingHorizontal: 16,
       borderWidth: 1,
       borderColor: theme.border,
     },
@@ -430,75 +408,57 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingTop: 10,
+      paddingTop: 12,
       paddingBottom: 8,
     },
     goalName: {
       color: theme.text,
-      fontSize: 14,
-      fontWeight: "700",
+      fontSize: 15,
+      fontWeight: "800",
     },
     goalMeta: {
       color: theme.muted,
-      marginTop: 3,
+      marginTop: 4,
       fontSize: 12,
     },
     goalPercent: {
-      color: theme.primary,
-      fontSize: 13,
-      fontWeight: "700",
+      color: theme.text,
+      fontSize: 14,
+      fontWeight: "800",
     },
     progressTrack: {
-      height: 8,
-      borderRadius: 6,
+      height: 10,
+      borderRadius: 999,
       backgroundColor: theme.surfaceAlt,
       overflow: "hidden",
-      marginBottom: 10,
+      marginBottom: 12,
     },
     progressFill: {
       height: "100%",
       backgroundColor: theme.primary,
-      borderRadius: 6,
-    },
-    categoryCard: {
-      backgroundColor: theme.surface,
-      borderRadius: 18,
-      borderWidth: 1,
-      borderColor: theme.border,
-      paddingVertical: 8,
-      paddingHorizontal: 14,
-      gap: 2,
+      borderRadius: 999,
     },
     categoryRow: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 8,
-    },
-    categoryLeft: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-    },
-    categoryDot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
+      paddingVertical: 14,
     },
     categoryName: {
       color: theme.text,
       fontSize: 14,
+      fontWeight: "700",
     },
     categoryAmount: {
       color: theme.text,
       fontSize: 14,
-      fontWeight: "700",
+      fontWeight: "800",
     },
     transactionRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingVertical: 12,
+      paddingVertical: 14,
     },
     transactionLeft: {
       flexDirection: "row",
@@ -506,32 +466,32 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       gap: 12,
     },
     transactionIconWrap: {
-      width: 28,
-      height: 28,
-      borderRadius: 14,
-      backgroundColor: theme.surfaceAlt,
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      backgroundColor: theme.primary,
       alignItems: "center",
       justifyContent: "center",
     },
     transactionTitle: {
       color: theme.text,
       fontSize: 14,
-      fontWeight: "600",
+      fontWeight: "800",
     },
     transactionDate: {
       color: theme.muted,
       fontSize: 12,
-      marginTop: 2,
+      marginTop: 3,
     },
     transactionAmount: {
       fontSize: 14,
-      fontWeight: "700",
+      fontWeight: "800",
     },
     positiveAmount: {
-      color: "#1E6BFF",
+      color: theme.primary,
     },
     negativeAmount: {
-      color: "#B94A4A",
+      color: theme.text,
     },
     separator: {
       height: 1,
@@ -549,64 +509,29 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
     emptyText: {
       color: theme.muted,
       fontSize: 13,
-      paddingVertical: 8,
+      paddingVertical: 12,
     },
     errorText: {
       color: theme.danger,
       fontSize: 12,
       marginTop: 2,
     },
-    tipCard: {
-      backgroundColor: theme.surface,
-      borderRadius: 18,
-      borderWidth: 1,
-      borderColor: theme.border,
-      paddingVertical: 14,
-      paddingHorizontal: 14,
-      marginTop: 4,
-      flexDirection: "row",
-      gap: 10,
-      alignItems: "flex-start",
-    },
-    tipIconWrap: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: theme.surfaceAlt,
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: 1,
-    },
-    tipContent: {
-      flex: 1,
-      gap: 2,
-    },
-    tipTitle: {
-      color: theme.text,
-      fontWeight: "700",
-      fontSize: 14,
-    },
-    tipText: {
-      color: theme.muted,
-      fontSize: 13,
-      lineHeight: 18,
-    },
     fab: {
       position: "absolute",
-      right: 24,
-      bottom: 90,
-      width: 58,
-      height: 58,
-      borderRadius: 29,
+      right: 22,
+      bottom: 92,
+      width: 62,
+      height: 62,
+      borderRadius: 31,
       backgroundColor: theme.primary,
       justifyContent: "center",
       alignItems: "center",
       borderWidth: 1,
-      borderColor: isDark ? "#6BA5FF" : "#1A63EA",
-      elevation: 4,
+      borderColor: theme.primary,
+      elevation: 8,
       shadowColor: "#000000",
-      shadowOpacity: isDark ? 0.35 : 0.14,
-      shadowOffset: { width: 0, height: 7 },
-      shadowRadius: 10,
+      shadowOpacity: 0.28,
+      shadowOffset: { width: 0, height: 12 },
+      shadowRadius: 18,
     },
   });
